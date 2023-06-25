@@ -5,14 +5,6 @@ export class CreateColumnDto {
   @IsNotEmpty()
   title: string;
 
-  @IsString()
-  @IsNotEmpty()
-  subtitle: string;
-
-  @IsString()
-  @IsNotEmpty()
-  text: string;
-
   @IsNumber()
   @IsNotEmpty()
   order: number;

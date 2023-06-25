@@ -29,10 +29,7 @@ export class ColumnsService {
 
   async update(id: number, updateColumnDto: UpdateColumnDto) {
     const column = await this.columnRepository.findOneBy({ id });
-    const newColumn = await this.columnRepository.merge(
-      column,
-      updateColumnDto,
-    );
+    const newColumn = this.columnRepository.merge(column, updateColumnDto);
     await this.columnRepository.save(newColumn);
     return `This action updates a #${id} column`;
   }
