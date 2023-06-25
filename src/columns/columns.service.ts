@@ -22,15 +22,24 @@ export class ColumnsService {
     return columns;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} column`;
+  async findOne(id: number) {
+    const column = await this.columnRepository.findOneBy({ id });
+    return column;
   }
 
-  update(id: number, updateColumnDto: UpdateColumnDto) {
+  async update(id: number, updateColumnDto: UpdateColumnDto) {
+    const column = await this.columnRepository.findOneBy({ id });
+    const newColumn = await this.columnRepository.merge(
+      column,
+      updateColumnDto,
+    );
+    await this.columnRepository.save(newColumn);
     return `This action updates a #${id} column`;
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    const column = await this.columnRepository.findOneBy({ id });
+    this.columnRepository.remove(column);
     return `This action removes a #${id} column`;
   }
 }
