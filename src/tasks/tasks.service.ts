@@ -120,7 +120,26 @@ export class TasksService {
   }
 
   async remove(id: number) {
-    const task = await this.taskRepository.findOneBy({ id });
+    const task = await this.taskRepository.findOne({
+      where: { id },
+      relations: ['column'],
+    });
+    const tasksReorderNewColumnQuery = this.taskRepository
+      .createQueryBuilder('task')
+      .where('task.id != :taskId')
+      .andWhere('task.columnId = :column')
+      .andWhere('task.order > :order')
+      .setParameters({
+        column: task.column.id,
+        order: task.order,
+        taskId: task.id,
+      });
+    const taskReorder = await tasksReorderNewColumnQuery.getMany();
+    for (const item of taskReorder) {
+      const task = await this.taskRepository.findOneBy({ id: item.id });
+      task.order = task.order - 1;
+      this.taskRepository.save(task);
+    }
     this.taskRepository.remove(task);
     return `This action removes a #${id} task`;
   }
