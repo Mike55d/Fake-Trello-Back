@@ -20,6 +20,7 @@ export class ColumnsService {
   async findAll() {
     const columns = await this.columnRepository.find({
       relations: ['tasks'],
+      order: { id: 'ASC' },
     });
     return columns;
   }

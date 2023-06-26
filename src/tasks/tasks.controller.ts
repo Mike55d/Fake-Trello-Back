@@ -11,6 +11,7 @@ import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { SortTaskDto } from './dto/sort-task.dto';
+import { ChangeColumnTaskDto } from './dto/change-column-task.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -29,6 +30,11 @@ export class TasksController {
   @Post('sort')
   sortTasks(@Body() sortTaskDto: SortTaskDto) {
     return this.tasksService.sortTask(sortTaskDto);
+  }
+
+  @Post('changeColumn')
+  changeColumn(@Body() changeColumnTaskDto: ChangeColumnTaskDto) {
+    return this.tasksService.changeColumn(changeColumnTaskDto);
   }
 
   @Get(':id')

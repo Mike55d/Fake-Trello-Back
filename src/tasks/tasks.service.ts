@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Task } from './entities/task.entity';
 import { SortTaskDto } from './dto/sort-task.dto';
+import { ChangeColumnTaskDto } from './dto/change-column-task.dto';
+import { Column } from 'src/columns/entities/column.entity';
 
 @Injectable()
 export class TasksService {
@@ -54,6 +56,41 @@ export class TasksService {
       }
     }
     return `tasks reordered`;
+  }
+
+  async changeColumn(sortTaskDto: ChangeColumnTaskDto) {
+    const { destinationIndex, columnDestiny, taskId, columnId, sourceIndex } =
+      sortTaskDto;
+    const taskDragged = await this.taskRepository.findOneBy({ id: taskId });
+    taskDragged.order = destinationIndex;
+    taskDragged.column = Object.assign(new Column(), {
+      id: columnDestiny,
+    });
+    await this.taskRepository.save(taskDragged);
+    const tasksReorderOldColumnQuery = this.taskRepository
+      .createQueryBuilder('task')
+      .andWhere('task.columnId = :columnId')
+      .andWhere('task.order > :sourceIndex')
+      .setParameters({ columnId, sourceIndex });
+    const tasksReorderOldColumn = await tasksReorderOldColumnQuery.getMany();
+    for (const item of tasksReorderOldColumn) {
+      const task = await this.taskRepository.findOneBy({ id: item.id });
+      task.order = task.order - 1;
+      this.taskRepository.save(task);
+    }
+    const tasksReorderNewColumnQuery = this.taskRepository
+      .createQueryBuilder('task')
+      .where('task.id != :taskId')
+      .andWhere('task.columnId = :columnDestiny')
+      .andWhere('task.order >= :destinationIndex')
+      .setParameters({ columnDestiny, destinationIndex, taskId });
+    const taskReorder = await tasksReorderNewColumnQuery.getMany();
+    for (const item of taskReorder) {
+      const task = await this.taskRepository.findOneBy({ id: item.id });
+      task.order = task.order + 1;
+      this.taskRepository.save(task);
+    }
+    return `tasks column changed`;
   }
 
   async findAll() {
