@@ -15,9 +15,5 @@ export class CreateTaskDto {
 
   @IsNumber()
   @IsNotEmpty()
-  order: number;
-
-  @IsNumber()
-  @IsNotEmpty()
   columnId: number;
 }
