@@ -25,7 +25,7 @@ export class TasksService {
     const task = this.taskRepository.create({
       ...createTaskDto,
       column: { id: createTaskDto.columnId },
-      order: maxOrder[0].order + 1,
+      order: maxOrder.length ? maxOrder[0].order + 1 : 0,
     });
     await this.taskRepository.save(task);
     return 'This action adds a new task';
