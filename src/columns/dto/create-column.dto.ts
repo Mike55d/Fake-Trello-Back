@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateColumnDto {
   @IsString()
@@ -6,6 +6,6 @@ export class CreateColumnDto {
   title: string;
 
   @IsNumber()
-  @IsNotEmpty()
-  order: number;
+  @IsOptional()
+  order?: number;
 }

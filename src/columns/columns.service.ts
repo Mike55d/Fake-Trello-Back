@@ -18,7 +18,9 @@ export class ColumnsService {
   }
 
   async findAll() {
-    const columns = await this.columnRepository.find({});
+    const columns = await this.columnRepository.find({
+      relations: ['tasks'],
+    });
     return columns;
   }
 
